@@ -1,0 +1,40 @@
+<!-- Interface web dashboard -->
+ <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTM-Agent Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .lead { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+        .qualified { background-color: #e8f5e9; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; }
+    </style>
+</head>
+<body>
+    <h1>🎯 GTM-Agent Dashboard</h1>
+    <button onclick="runAgent()">🚀 Exécuter l'agent</button>
+    <div id="results"></div>
+    
+    <script>
+        async function runAgent() {
+            const response = await fetch('/api/run');
+            const data = await response.json();
+            
+            let html = `<h2>${data.message}</h2>`;
+            data.data?.forEach(lead => {
+                html += `
+                <div class="lead qualified">
+                    <strong>${lead.company}</strong><br>
+                    Contact: ${lead.name} (${lead.title})<br>
+                    Email: ${lead.email}<br>
+                    Article: ${lead.title}
+                </div>`;
+            });
+            
+            document.getElementById('results').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
