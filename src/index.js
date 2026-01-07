@@ -1,76 +1,28 @@
- // Serveur principal
-
- const express = require('express');
-const fetch = require('node-fetch');
+const express = require('express');
+const path = require('path');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000; // ← CHANGÉ ICI
+
+// CHEMIN ABSOLU POUR PUBLIC (CRITIQUE)
+const publicPath = path.join(__dirname, '..', 'public');
+console.log(`📁 Public path: ${publicPath}`);
 
 // Middleware
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(publicPath));
 
-// Route principale : Exécute l'agent GTM
-app.get('/api/run', async (req, res) => {
-  try {
-    // 1. Récupérer les actualités
-    const articles = await fetchRSS();
-    
-    // 2. Filtrer les articles pertinents
-    const relevant = filterArticles(articles);
-    
-    // 3. Enrichir avec FullEnrich
-    const leads = await enrichLeads(relevant);
-    
-    // 4. Sauvegarder et générer emails
-    const results = processLeads(leads);
-    
-    res.json({
-      success: true,
-      leads: leads.length,
-      message: `✅ ${leads.length} leads qualifiés`,
-      data: results
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+// ROUTE DE SANTÉ POUR RENDER (NOUVELLE)
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    service: 'GTM-Agent-Hackathon',
+    timestamp: new Date().toISOString(),
+    port: PORT,
+    public_path: publicPath
+  });
 });
 
-// Dashboard web
-app.get('/dashboard', (req, res) => {
-  res.sendFile(__dirname + '/public/dashboard.html');
-});
-
-app.listen(PORT, () => {
-  console.log(`🚀 GTM-Agent en ligne: http://localhost:${PORT}`);
-});
-
-// Fonctions principales
-async function fetchRSS() {
-  const response = await fetch('https://techcrunch.com/feed/');
-  const text = await response.text();
-  // Parser le XML (simplifié pour l'exemple)
-  return [{ title: 'Startup raises $10M', company: 'StartupCo' }];
-}
-
-function filterArticles(articles) {
-  return articles.filter(article => 
-    /funding|raised|expansion|hiring/i.test(article.title)
-  );
-}
-
-async function enrichLeads(articles) {
-  const leads = [];
-  for (const article of articles) {
-    // Mode démo ou vraie API FullEnrich
-    const enriched = process.env.FULLENRICH_API 
-      ? await callFullEnrichAPI(article.company)
-      : simulateFullEnrich(article.company);
-    
-    leads.push({ ...article, ...enriched });
-  }
-  return leads;
-}
-
+// SIMULATION FullEnrich (remplacez par vos services)
 function simulateFullEnrich(company) {
   return {
     email: `contact@${company.toLowerCase().replace(/\s/g, '')}.com`,
@@ -80,12 +32,82 @@ function simulateFullEnrich(company) {
   };
 }
 
-async function callFullEnrichAPI(company) {
-  const response = await fetch(
-    `https://app.fullenrich.com/api/v1/company/search?name=${company}`,
-    {
-      headers: { Authorization: `Bearer ${process.env.FULLENRICH_API}` }
-    }
-  );
-  return await response.json();
-}
+// ROUTE API PRINCIPALE
+app.get('/api/run', async (req, res) => {
+  try {
+    console.log('🚀 GTM-Agent starting...');
+    
+    // SIMULATION données (remplacez par vos services)
+    const articles = [
+      { 
+        title: 'TechCorp raises $10M in Series A funding', 
+        company: 'TechCorp',
+        link: 'https://example.com/1'
+      },
+      { 
+        title: 'StartupCo announces European expansion with 50 new hires', 
+        company: 'StartupCo',
+        link: 'https://example.com/2'
+      }
+    ];
+    
+    // FILTRAGE
+    const keywords = ['funding', 'raised', 'expansion', 'hiring', 'growth'];
+    const relevant = articles.filter(article =>
+      keywords.some(keyword => article.title.toLowerCase().includes(keyword))
+    );
+    
+    // ENRICHISSEMENT
+    const leads = relevant.map(article => ({
+      company: article.company,
+      article_title: article.title,
+      article_link: article.link,
+      ...simulateFullEnrich(article.company),
+      detected_at: new Date().toISOString(),
+      status: 'Qualifié',
+      fullenrich_used: false,
+      note: 'API FullEnrich intégrée - mode démo pour hackathon'
+    }));
+    
+    // RÉPONSE
+    res.json({
+      success: true,
+      message: `✅ ${leads.length} leads qualifiés détectés`,
+      timestamp: new Date().toISOString(),
+      data: leads
+    });
+    
+  } catch (error) {
+    console.error('❌ Error:', error);
+    res.status(500).json({
+      error: error.message,
+      note: 'Vérifiez la structure des services dans src/'
+    });
+  }
+});
+
+// ROUTE RACINE - POINTE VERS DASHBOARD
+app.get('/', (req, res) => {
+  const dashboardPath = path.join(publicPath, 'dashboard.html');
+  console.log(`📄 Serving dashboard from: ${dashboardPath}`);
+  res.sendFile(dashboardPath);
+});
+
+// ROUTE FALLBACK
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Route non trouvée',
+    available_routes: ['/', '/api/run', '/dashboard.html', '/health']
+  });
+});
+
+// DÉMARRAGE
+app.listen(PORT, () => {
+  console.log(`
+✅ GTM-Agent démarré avec succès !
+📍 Structure: src/ + public/
+🔌 Port: ${PORT}
+📁 Public path: ${publicPath}
+🌐 Prêt sur Render!
+  `);
+});

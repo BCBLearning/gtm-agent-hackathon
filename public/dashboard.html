@@ -1,39 +1,78 @@
-<!-- Interface web dashboard -->
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GTM-Agent Dashboard</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .lead { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
-        .qualified { background-color: #e8f5e9; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; }
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; }
+        button { 
+            padding: 15px 30px; 
+            font-size: 16px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover { background: #0056b3; }
+        .lead { 
+            border: 1px solid #ddd; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
     </style>
 </head>
 <body>
-    <h1>🎯 GTM-Agent Dashboard</h1>
-    <button onclick="runAgent()">🚀 Exécuter l'agent</button>
+    <h1>🚀 GTM-Agent Dashboard</h1>
+    <p>Agent GTM automatisé - Hackathon Solution</p>
+    
+    <button onclick="runAgent()">Exécuter l'agent GTM</button>
+    
+    <h2>Résultats :</h2>
     <div id="results"></div>
     
     <script>
         async function runAgent() {
-            const response = await fetch('/api/run');
-            const data = await response.json();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>🔄 Exécution en cours...</p>';
             
-            let html = `<h2>${data.message}</h2>`;
-            data.data?.forEach(lead => {
-                html += `
-                <div class="lead qualified">
-                    <strong>${lead.company}</strong><br>
-                    Contact: ${lead.name} (${lead.title})<br>
-                    Email: ${lead.email}<br>
-                    Article: ${lead.title}
-                </div>`;
-            });
-            
-            document.getElementById('results').innerHTML = html;
+            try {
+                const response = await fetch('/api/run');
+                const data = await response.json();
+                
+                let html = `<p class="success"><strong>${data.message}</strong></p>`;
+                html += `<p><em>Exécuté à : ${new Date(data.timestamp).toLocaleString()}</em></p>`;
+                
+                if (data.data && data.data.length > 0) {
+                    data.data.forEach(lead => {
+                        html += `
+                        <div class="lead">
+                            <h3>🏢 ${lead.company}</h3>
+                            <p><strong>Article :</strong> "${lead.article_title}"</p>
+                            <p><strong>Contact :</strong> ${lead.name} (${lead.title})</p>
+                            <p><strong>Email :</strong> ${lead.email}</p>
+                            <p><strong>Téléphone :</strong> ${lead.phone}</p>
+                            <p><strong>Statut :</strong> ${lead.status}</p>
+                        </div>`;
+                    });
+                } else {
+                    html += '<p>Aucun lead détecté cette fois.</p>';
+                }
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <p class="error">❌ Erreur : ${error.message}</p>
+                    <p>Vérifiez que le serveur est en cours d'exécution.</p>
+                `;
+            }
         }
     </script>
 </body>
