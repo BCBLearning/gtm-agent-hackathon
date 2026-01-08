@@ -7,6 +7,9 @@ const { generateGTMEmail } = require('./utils/emailGenerator');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
+const DEMO_MODE = process.env.DEMO_MODE === 'true';
+
+console.log(`🚀 GTM-Agent starting | Demo mode: ${DEMO_MODE}`);
 
 // Public path
 const publicPath = path.join(__dirname, '..', 'public');
@@ -23,6 +26,7 @@ app.get('/hackathon-info', (req, res) => {
     res.json({
         project: "GTM-Agent",
         description: "Automated GTM lead detection and enrichment agent",
+        mode: DEMO_MODE ? "Demo" : "Production",
         live_demo: "https://gtm-agent-hackathon.onrender.com",
         github_repo: "https://github.com/your-username/gtm-agent-hackathon"
     });
@@ -43,7 +47,8 @@ app.get('/api/run', async (req, res) => {
             hackathon_project: "GTM-Agent",
             execution_summary: { leads_detected: leads.length, emails_generated: emails.length, execution_time: new Date().toISOString() },
             business_impact: { potential_pipeline: `$${leads.length*10000}/month`, time_saved: `${leads.length*2} hours`, roi: "Infinite ($0 cost)" },
-            data: { leads, emails }
+            data: { leads, emails },
+            mode: DEMO_MODE ? "Demo" : "Production"
         });
     } catch (err) {
         console.error('❌ Error:', err);
@@ -58,5 +63,5 @@ app.get('/', (req, res) => res.sendFile(path.join(publicPath, 'dashboard.html'))
 app.use((req, res) => res.status(404).json({ error: 'Route not found', available_routes: ['/', '/api/run', '/health', '/hackathon-info'] }));
 
 app.listen(PORT, () => {
-    console.log(`✅ GTM-Agent started on port ${PORT} | Demo mode: ${process.env.DEMO_MODE}`);
+    console.log(`✅ GTM-Agent started on port ${PORT} | Demo mode: ${DEMO_MODE}`);
 });

@@ -1,8 +1,3 @@
-// src/utils/emailGenerator.js
-
-/**
- * Generate GTM email for a given lead
- */
 function generateGTMEmail(lead) {
     return {
         subject: `Opportunity with ${lead.company} - ${lead.article_title.substring(0, 50)}...`,

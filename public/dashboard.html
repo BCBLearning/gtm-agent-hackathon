@@ -1,115 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTM-Agent Dashboard</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; }
-        h1 { color: #333; }
-        button { 
-            padding: 15px 30px; 
-            font-size: 16px; 
-            background: #007bff; 
-            color: white; 
-            border: none; 
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px 5px;
-        }
-        button:hover { background: #0056b3; }
-        .lead { 
-            border: 1px solid #ddd; 
-            padding: 15px; 
-            margin: 15px 0; 
-            border-radius: 5px;
-            background: #f9f9f9;
-        }
-        .success { color: #28a745; }
-        .error { color: #dc3545; }
-        .hackathon-info { 
-            border: 2px solid #007bff; 
-            padding: 20px; 
-            margin: 20px 0; 
-            background: #f0f8ff;
-            border-radius: 8px;
-        }
-        .criteria-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .criterion {
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            border-left: 4px solid #007bff;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTM-Agent Dashboard</title>
+<style>
+body { font-family: Arial, sans-serif; max-width: 1000px; margin:0 auto; padding:20px;}
+h1 { color:#333; }
+button { padding:15px 30px; font-size:16px; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer; margin:10px 5px;}
+button:hover { background:#0056b3; }
+.lead { border:1px solid #ddd; padding:15px; margin:15px 0; border-radius:5px; background:#f9f9f9;}
+.success { color:#28a745;}
+.error { color:#dc3545;}
+</style>
 </head>
 <body>
-    <h1>🚀 GTM-Agent Dashboard</h1>
-    <p>Automated GTM Lead Detection System - Hackathon Solution</p>
-    
-    <div class="hackathon-info">
-        <h3>🏆 GTM Hackathon Compliance</h3>
-        <p><strong>Judging Criteria Met:</strong></p>
-        <div class="criteria-grid">
-            <div class="criterion">✅ Innovation</div>
-            <div class="criterion">✅ Business Impact</div>
-            <div class="criterion">✅ Repeatability</div>
-            <div class="criterion">✅ Automation</div>
-            <div class="criterion">✅ Presentation</div>
-        </div>
-        <p><strong>Required Features:</strong></p>
-        <ul>
-            <li>✅ Uses FullEnrich API (endpoint configured)</li>
-            <li>✅ Complete automated workflow</li>
-            <li>✅ Working system deployed on Render</li>
-            <li>✅ Clear business impact demonstration</li>
-            <li>✅ GitHub repository with source code</li>
-        </ul>
-        <p>
-            <a href="/hackathon-info" target="_blank">View technical details for judges</a> |
-            <a href="/health" target="_blank">Service health check</a>
-        </p>
-    </div>
-    
-    <button onclick="runAgent()">▶️ Execute GTM Agent</button>
-    <button onclick="viewJSON()">📊 View Raw API Response</button>
-    
-    <h2>Results:</h2>
-    <div id="results"></div>
-    
-    <script>
-        async function runAgent() {
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = '<p>🔄 Executing GTM Agent...</p>';
-            
-            try {
-                const response = await fetch('/api/run');
-                const data = await response.json();
-                
-                let html = `<p class="success"><strong>${data.message}</strong></p>`;
-                html += `<p><em>Executed at: ${new Date(data.execution_summary.execution_time).toLocaleString()}</em></p>`;
-                
-                // Business impact summary
-                html += `
-                <div style="background:#e8f5e9; padding:15px; border-radius:5px; margin:15px 0;">
+<h1>🚀 GTM-Agent Dashboard</h1>
+<p>Mode: <strong id="mode">...</strong></p>
+<button onclick="runAgent()">▶️ Execute GTM Agent</button>
+<button onclick="viewJSON()">📊 View Raw API Response</button>
+<h2>Results:</h2>
+<div id="results"></div>
+
+<script>
+async function runAgent() {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '<p>🔄 Executing GTM Agent...</p>';
+    try {
+        const response = await fetch('/api/run');
+        const data = await response.json();
+        document.getElementById('mode').textContent = data.mode;
+
+        let html = `<p class="success"><strong>GTM Agent executed successfully!</strong></p>`;
+        html += `<p><em>Executed at: ${new Date(data.execution_summary.execution_time).toLocaleString()}</em></p>`;
+
+        html += `<div style="background:#e8f5e9;padding:15px;border-radius:5px;margin:15px 0;">
                     <h3>📈 Business Impact Summary</h3>
                     <p><strong>Potential Pipeline:</strong> ${data.business_impact.potential_pipeline}</p>
                     <p><strong>Time Saved:</strong> ${data.business_impact.time_saved}</p>
                     <p><strong>ROI:</strong> ${data.business_impact.roi}</p>
-                </div>`;
-                
-                if (data.data.leads && data.data.leads.length > 0) {
-                    data.data.leads.forEach((lead, index) => {
-                        const email = data.data.emails[index];
-                        html += `
-                        <div class="lead">
+                 </div>`;
+
+        if (data.data.leads && data.data.leads.length > 0) {
+            data.data.leads.forEach((lead, index) => {
+                const email = data.data.emails[index];
+                html += `<div class="lead">
                             <h3>🏢 ${lead.company}</h3>
-                            <p><strong>Article:</strong> "${lead.article_title}"</p>
                             <p><strong>Contact:</strong> ${lead.name} (${lead.title})</p>
                             <p><strong>Email:</strong> ${lead.email}</p>
                             <p><strong>Phone:</strong> ${lead.phone}</p>
@@ -119,33 +55,26 @@
                                 <small>To: ${email.to}</small><br>
                                 <small>Subject: ${email.subject}</small>
                             </div>
-                        </div>`;
-                    });
-                } else {
-                    html += '<p>No leads detected this time.</p>';
-                }
-                
-                resultsDiv.innerHTML = html;
-                
-            } catch (error) {
-                resultsDiv.innerHTML = `
-                    <p class="error">❌ Error: ${error.message}</p>
-                    <p>Please check if the server is running.</p>
-                `;
-            }
+                         </div>`;
+            });
+        } else {
+            html += '<p>No leads detected this time.</p>';
         }
-        
-        async function viewJSON() {
-            const response = await fetch('/api/run');
-            const data = await response.json();
-            document.getElementById('results').innerHTML = 
-                `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-        }
-        
-        // Auto-run on page load for demo purposes
-        window.onload = function() {
-            setTimeout(runAgent, 1000);
-        };
-    </script>
+
+        resultsDiv.innerHTML = html;
+
+    } catch (error) {
+        resultsDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+    }
+}
+
+async function viewJSON() {
+    const response = await fetch('/api/run');
+    const data = await response.json();
+    document.getElementById('results').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+}
+
+window.onload = function() { setTimeout(runAgent, 1000); }
+</script>
 </body>
 </html>
