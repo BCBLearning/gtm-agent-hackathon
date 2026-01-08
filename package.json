@@ -7,18 +7,16 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js"
   },
-  "keywords": [
-    "gtm",
-    "hackathon",
-    "fullenrich",
-    "automation",
-    "lead-generation"
-  ],
+  "keywords": ["gtm", "hackathon", "fullenrich", "automation", "lead-generation"],
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.0",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   },
   "engines": {
     "node": ">=14.0.0"

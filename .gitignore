@@ -1,0 +1,61 @@
+# -----------------------------
+# Node dependencies
+# -----------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# -----------------------------
+# Environment / API keys
+# -----------------------------
+.env
+.env.local
+.env.*.local
+
+# -----------------------------
+# Logs
+# -----------------------------
+logs/
+*.log
+
+# -----------------------------
+# OS / Editor
+# -----------------------------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# -----------------------------
+# Build / Output / Coverage
+# -----------------------------
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# -----------------------------
+# Temp / Swap / Misc
+# -----------------------------
+*.tmp
+*.swp
+*.bak
+*.cache
+*.pid
+*.seed
+
+# -----------------------------
+# Render / Deployment temp
+# -----------------------------
+# Ignore temporary Render files, but keep public and src
+*.render-build
+*.render-deploy
+
+# -----------------------------
+# Keep source code and public assets
+# -----------------------------
+!src/
+!public/
