@@ -50,7 +50,6 @@ coverage/
 # -----------------------------
 # Render / Deployment temp
 # -----------------------------
-# Ignore temporary Render files, but keep public and src
 *.render-build
 *.render-deploy
 

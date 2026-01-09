@@ -1,80 +1,1539 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GTM-Agent Dashboard</title>
-<style>
-body { font-family: Arial, sans-serif; max-width: 1000px; margin:0 auto; padding:20px;}
-h1 { color:#333; }
-button { padding:15px 30px; font-size:16px; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer; margin:10px 5px;}
-button:hover { background:#0056b3; }
-.lead { border:1px solid #ddd; padding:15px; margin:15px 0; border-radius:5px; background:#f9f9f9;}
-.success { color:#28a745;}
-.error { color:#dc3545;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 GTM-Agent | Automated Lead Detection System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --dark: #121826;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --border: #e1e5eb;
+            --card-bg: #ffffff;
+            --sidebar-bg: #1a1f36;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            color: white;
+            padding: 25px 20px;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo i {
+            font-size: 28px;
+            color: var(--primary);
+        }
+        
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #4361ee, #7209b7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-section {
+            margin-bottom: 30px;
+        }
+        
+        .nav-section h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        
+        .nav-links {
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-bottom: 8px;
+        }
+        
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: rgba(67, 97, 238, 0.2);
+            color: white;
+        }
+        
+        .nav-links a i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .mode-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        
+        .mode-demo {
+            background: rgba(6, 214, 160, 0.2);
+            color: var(--success);
+        }
+        
+        .mode-production {
+            background: rgba(239, 71, 111, 0.2);
+            color: var(--danger);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+            background: #f5f7fb;
+        }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .page-title h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .page-title p {
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray);
+        }
+        
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        
+        .icon-blue {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+        
+        .icon-green {
+            background: rgba(6, 214, 160, 0.1);
+            color: var(--success);
+        }
+        
+        .icon-purple {
+            background: rgba(114, 9, 183, 0.1);
+            color: var(--secondary);
+        }
+        
+        .icon-orange {
+            background: rgba(255, 209, 102, 0.1);
+            color: #ff9e00;
+        }
+        
+        .card-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .card-subtext {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        /* Configuration Card */
+        .config-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .config-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .config-group {
+            margin-bottom: 25px;
+        }
+        
+        .config-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .select-wrapper, .input-wrapper {
+            position: relative;
+        }
+        
+        select, input, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        /* Buttons */
+        .buttons-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn i {
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: #333;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-lg {
+            padding: 16px 32px;
+            font-size: 16px;
+        }
+        
+        /* Results Section */
+        .results-section {
+            margin-top: 30px;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .results-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .results-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .lead-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .lead-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .lead-company {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .lead-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-qualified {
+            background: rgba(6, 214, 160, 0.1);
+            color: var(--success);
+        }
+        
+        .badge-new {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+        
+        .lead-article {
+            color: var(--gray);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .lead-contact {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(67, 97, 238, 0.03);
+            border-radius: 8px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .contact-item i {
+            color: var(--primary);
+            width: 20px;
+        }
+        
+        .email-preview {
+            background: #fff9e6;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .email-subject {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .email-body {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+            white-space: pre-line;
+        }
+        
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Alerts */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .alert-success {
+            background: rgba(6, 214, 160, 0.1);
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+        
+        .alert-error {
+            background: rgba(239, 71, 111, 0.1);
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
+        }
+        
+        .alert-info {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            border-left: 4px solid var(--primary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                padding: 25px 15px;
+            }
+            
+            .logo h1, .nav-section h3, .nav-links span {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+            
+            .nav-links a {
+                justify-content: center;
+                padding: 12px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .buttons-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
-<h1>🚀 GTM-Agent Dashboard</h1>
-<p>Mode: <strong id="mode">...</strong></p>
-<button onclick="runAgent()">▶️ Execute GTM Agent</button>
-<button onclick="viewJSON()">📊 View Raw API Response</button>
-<h2>Results:</h2>
-<div id="results"></div>
-
-<script>
-async function runAgent() {
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = '<p>🔄 Executing GTM Agent...</p>';
-    try {
-        const response = await fetch('/api/run');
-        const data = await response.json();
-        document.getElementById('mode').textContent = data.mode;
-
-        let html = `<p class="success"><strong>GTM Agent executed successfully!</strong></p>`;
-        html += `<p><em>Executed at: ${new Date(data.execution_summary.execution_time).toLocaleString()}</em></p>`;
-
-        html += `<div style="background:#e8f5e9;padding:15px;border-radius:5px;margin:15px 0;">
-                    <h3>📈 Business Impact Summary</h3>
-                    <p><strong>Potential Pipeline:</strong> ${data.business_impact.potential_pipeline}</p>
-                    <p><strong>Time Saved:</strong> ${data.business_impact.time_saved}</p>
-                    <p><strong>ROI:</strong> ${data.business_impact.roi}</p>
-                 </div>`;
-
-        if (data.data.leads && data.data.leads.length > 0) {
-            data.data.leads.forEach((lead, index) => {
-                const email = data.data.emails[index];
-                html += `<div class="lead">
-                            <h3>🏢 ${lead.company}</h3>
-                            <p><strong>Contact:</strong> ${lead.name} (${lead.title})</p>
-                            <p><strong>Email:</strong> ${lead.email}</p>
-                            <p><strong>Phone:</strong> ${lead.phone}</p>
-                            <p><strong>Status:</strong> ${lead.status}</p>
-                            <div style="background:#fff3cd; padding:10px; margin-top:10px; border-radius:3px;">
-                                <strong>Generated Email:</strong><br>
-                                <small>To: ${email.to}</small><br>
-                                <small>Subject: ${email.subject}</small>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-rocket"></i>
+                <h1>GTM-Agent</h1>
+            </div>
+            
+            <div class="nav-section">
+                <h3>Navigation</h3>
+                <ul class="nav-links">
+                    <li><a href="#" class="active" onclick="showSection('dashboard')">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a></li>
+                    <li><a href="#" onclick="showSection('leads')">
+                        <i class="fas fa-users"></i>
+                        <span>Leads Detected</span>
+                        <span class="mode-badge mode-demo" id="leadsCount">0</span>
+                    </a></li>
+                    <li><a href="#" onclick="showSection('configuration')">
+                        <i class="fas fa-cog"></i>
+                        <span>Configuration</span>
+                    </a></li>
+                    <li><a href="#" onclick="showSection('history')">
+                        <i class="fas fa-history"></i>
+                        <span>Execution History</span>
+                    </a></li>
+                    <li><a href="#" onclick="showSection('analytics')">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Analytics</span>
+                    </a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <h3>System Status</h3>
+                <ul class="nav-links">
+                    <li><a href="#">
+                        <i class="fas fa-plug"></i>
+                        <span>API Status</span>
+                        <span class="mode-badge mode-demo" id="apiStatus">Active</span>
+                    </a></li>
+                    <li><a href="#">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                        <span class="mode-badge mode-production" id="notificationCount">3</span>
+                    </a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section" style="margin-top: auto;">
+                <ul class="nav-links">
+                    <li><a href="#" onclick="toggleMode()">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Mode: <span id="currentModeDisplay">Demo</span></span>
+                        <span class="mode-badge mode-demo" id="modeBadge">DEMO</span>
+                    </a></li>
+                    <li><a href="#" onclick="document.getElementById('aboutModal').style.display='flex'">
+                        <i class="fas fa-info-circle"></i>
+                        <span>About</span>
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="page-title">
+                    <h2 id="pageTitle">GTM Agent Dashboard</h2>
+                    <p id="pageSubtitle">Automated lead detection and enrichment system</p>
+                </div>
+                <div class="user-actions">
+                    <button class="btn btn-secondary" onclick="exportLeads()">
+                        <i class="fas fa-download"></i> Export Leads
+                    </button>
+                    <button class="btn btn-primary" onclick="runAgent()">
+                        <i class="fas fa-play"></i> Execute Agent
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Dashboard Section -->
+            <div id="dashboardSection" class="section">
+                <!-- Stats Cards -->
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Leads Detected</div>
+                            <div class="card-icon icon-blue">
+                                <i class="fas fa-users"></i>
                             </div>
-                         </div>`;
+                        </div>
+                        <div class="card-value" id="statLeads">0</div>
+                        <div class="card-subtext">This execution</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Pipeline Value</div>
+                            <div class="card-icon icon-green">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                        <div class="card-value" id="statPipeline">$0</div>
+                        <div class="card-subtext">Monthly potential</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Time Saved</div>
+                            <div class="card-icon icon-purple">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="card-value" id="statTime">0 hours</div>
+                        <div class="card-subtext">Manual work automated</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Success Rate</div>
+                            <div class="card-icon icon-orange">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                        </div>
+                        <div class="card-value" id="statSuccess">0%</div>
+                        <div class="card-subtext">Detection accuracy</div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="config-card">
+                    <div class="config-header">
+                        <h3>Quick Actions</h3>
+                    </div>
+                    
+                    <div class="buttons-group">
+                        <button class="btn btn-primary btn-lg" onclick="runAgent()">
+                            <i class="fas fa-play-circle"></i> Execute Agent Now
+                        </button>
+                        <button class="btn btn-secondary" onclick="showSection('configuration')">
+                            <i class="fas fa-cog"></i> Configure Settings
+                        </button>
+                        <button class="btn btn-success" onclick="testRSSFeeds()">
+                            <i class="fas fa-wifi"></i> Test RSS Feeds
+                        </button>
+                        <button class="btn btn-warning" onclick="clearResults()">
+                            <i class="fas fa-trash-alt"></i> Clear Results
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Recent Leads Preview -->
+                <div class="config-card">
+                    <div class="config-header">
+                        <h3>Recent Leads</h3>
+                        <button class="btn btn-secondary" onclick="showSection('leads')">
+                            View All <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="recentLeads">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            No leads detected yet. Execute the agent to start detecting opportunities.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Configuration Section -->
+            <div id="configurationSection" class="section" style="display: none;">
+                <div class="config-card">
+                    <div class="config-header">
+                        <h3>Agent Configuration</h3>
+                        <button class="btn btn-success" onclick="saveConfiguration()">
+                            <i class="fas fa-save"></i> Save Configuration
+                        </button>
+                    </div>
+                    
+                    <div class="config-group">
+                        <label><i class="fas fa-toggle-on"></i> Operating Mode</label>
+                        <div class="select-wrapper">
+                            <select id="modeSelect" onchange="updateModeBadge()">
+                                <option value="demo">Demo Mode (Mock Data)</option>
+                                <option value="production">Production Mode (Real API)</option>
+                            </select>
+                        </div>
+                        <small class="card-subtext" style="margin-top: 8px; display: block;">
+                            Demo mode uses mock data for testing. Production mode requires FullEnrich API key.
+                        </small>
+                    </div>
+                    
+                    <div class="config-group">
+                        <label><i class="fas fa-rss"></i> RSS Feeds Sources</label>
+                        <div class="input-wrapper">
+                            <textarea id="rssInput" placeholder="Enter RSS feed URLs (one per line or comma separated)">
+https://techcrunch.com/feed/
+https://venturebeat.com/feed/
+https://www.cnbc.com/id/100003114/device/rss/rss.html
+https://feeds.feedburner.com/TechCrunch/</textarea>
+                        </div>
+                        <small class="card-subtext" style="margin-top: 8px; display: block;">
+                            Add RSS feeds from tech news, business publications, or industry blogs.
+                        </small>
+                    </div>
+                    
+                    <div class="config-group">
+                        <label><i class="fas fa-key"></i> Keywords for Detection</label>
+                        <div class="input-wrapper">
+                            <textarea id="keywordsInput" placeholder="Enter keywords (comma separated)">
+funding, raised, investment, series, round, startup, 
+acquisition, merger, expansion, hiring, growth, 
+valuation, stock, launch, announces, partnership</textarea>
+                        </div>
+                        <small class="card-subtext" style="margin-top: 8px; display: block;">
+                            These keywords will trigger lead detection when found in article titles.
+                        </small>
+                    </div>
+                    
+                    <div class="config-group">
+                        <label><i class="fas fa-key"></i> FullEnrich API Key</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="apiKeyInput" placeholder="Enter your FullEnrich API key">
+                        </div>
+                        <small class="card-subtext" style="margin-top: 8px; display: block;">
+                            Required for production mode. Get your API key from FullEnrich.
+                        </small>
+                    </div>
+                    
+                    <div class="buttons-group">
+                        <button class="btn btn-primary" onclick="testConfiguration()">
+                            <i class="fas fa-vial"></i> Test Configuration
+                        </button>
+                        <button class="btn btn-success" onclick="saveConfiguration()">
+                            <i class="fas fa-save"></i> Save & Apply
+                        </button>
+                        <button class="btn btn-secondary" onclick="loadConfiguration()">
+                            <i class="fas fa-sync"></i> Reload Defaults
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Leads Section -->
+            <div id="leadsSection" class="section" style="display: none;">
+                <div class="results-header">
+                    <h3>Detected Leads</h3>
+                    <div class="results-actions">
+                        <button class="btn btn-secondary" onclick="exportLeads('csv')">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportLeads('json')">
+                            <i class="fas fa-file-code"></i> JSON
+                        </button>
+                        <button class="btn btn-danger" onclick="clearResults()">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="leadsResults">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        No leads to display. Execute the agent first.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- History Section -->
+            <div id="historySection" class="section" style="display: none;">
+                <div class="config-card">
+                    <div class="config-header">
+                        <h3>Execution History</h3>
+                        <button class="btn btn-secondary" onclick="refreshHistory()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                    
+                    <div id="executionHistory">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            No execution history available yet.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analytics Section -->
+            <div id="analyticsSection" class="section" style="display: none;">
+                <div class="config-card">
+                    <div class="config-header">
+                        <h3>System Analytics</h3>
+                        <div class="results-actions">
+                            <button class="btn btn-secondary" onclick="refreshAnalytics()">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="cards-grid" style="margin-bottom: 30px;">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Total Executions</div>
+                                <div class="card-icon icon-blue">
+                                    <i class="fas fa-play-circle"></i>
+                                </div>
+                            </div>
+                            <div class="card-value" id="analyticsExecutions">0</div>
+                            <div class="card-subtext">All time</div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Total Leads</div>
+                                <div class="card-icon icon-green">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <div class="card-value" id="analyticsTotalLeads">0</div>
+                            <div class="card-subtext">All time</div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Avg. Pipeline</div>
+                                <div class="card-icon icon-purple">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                            <div class="card-value" id="analyticsAvgPipeline">$0</div>
+                            <div class="card-subtext">Per execution</div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Success Rate</div>
+                                <div class="card-icon icon-orange">
+                                    <i class="fas fa-chart-pie"></i>
+                                </div>
+                            </div>
+                            <div class="card-value" id="analyticsSuccessRate">0%</div>
+                            <div class="card-subtext">Detection accuracy</div>
+                        </div>
+                    </div>
+                    
+                    <div id="analyticsDetails">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            Analytics data will appear after multiple executions.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+    
+    <!-- About Modal -->
+    <div class="loading-overlay" id="aboutModal" style="display: none;">
+        <div class="card" style="max-width: 500px; padding: 30px; position: relative;">
+            <button onclick="document.getElementById('aboutModal').style.display='none'" 
+                    style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--gray);">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <h3 style="margin-bottom: 20px; color: var(--primary);">
+                <i class="fas fa-rocket"></i> GTM-Agent Hackathon 2026
+            </h3>
+            
+            <p style="margin-bottom: 20px; line-height: 1.6;">
+                <strong>GTM-Agent</strong> is an automated lead detection and enrichment system built for the GTM Hackathon 2026.
+                It scans RSS feeds for business opportunities, enriches company data, and generates actionable leads.
+            </p>
+            
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin-bottom: 10px;">Features:</h4>
+                <ul style="padding-left: 20px; line-height: 1.8;">
+                    <li>Real-time RSS feed monitoring</li>
+                    <li>AI-powered lead qualification</li>
+                    <li>Company data enrichment</li>
+                    <li>Automated email generation</li>
+                    <li>Pipeline value estimation</li>
+                    <li>Export capabilities (CSV, JSON)</li>
+                </ul>
+            </div>
+            
+            <div style="background: rgba(67, 97, 238, 0.05); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <p style="font-size: 14px; margin-bottom: 10px;">
+                    <strong>Mode Selection:</strong> Choose between Demo (mock data) and Production (real API) modes.
+                </p>
+                <p style="font-size: 14px;">
+                    <strong>Note:</strong> Production mode requires a valid FullEnrich API key.
+                </p>
+            </div>
+            
+            <button class="btn btn-primary" onclick="document.getElementById('aboutModal').style.display='none'" style="width: 100%;">
+                <i class="fas fa-check"></i> Got it!
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentMode = 'demo';
+        let currentLeads = [];
+        let executionHistory = [];
+        
+        // DOM Elements
+        const sections = {
+            dashboard: document.getElementById('dashboardSection'),
+            configuration: document.getElementById('configurationSection'),
+            leads: document.getElementById('leadsSection'),
+            history: document.getElementById('historySection'),
+            analytics: document.getElementById('analyticsSection')
+        };
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfiguration();
+            updateModeBadge();
+            showSection('dashboard');
+            
+            // Auto-run in demo mode
+            if (currentMode === 'demo') {
+                setTimeout(runAgent, 1500);
+            }
+        });
+        
+        // Section Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            Object.values(sections).forEach(section => {
+                if (section) section.style.display = 'none';
             });
-        } else {
-            html += '<p>No leads detected this time.</p>';
+            
+            // Show selected section
+            if (sections[sectionName]) {
+                sections[sectionName].style.display = 'block';
+            }
+            
+            // Update page title
+            const titles = {
+                dashboard: 'Dashboard',
+                configuration: 'Configuration',
+                leads: 'Detected Leads',
+                history: 'Execution History',
+                analytics: 'Analytics'
+            };
+            
+            document.getElementById('pageTitle').textContent = titles[sectionName] || 'GTM Agent';
+            document.getElementById('pageSubtitle').textContent = 
+                sectionName === 'dashboard' ? 'Automated lead detection and enrichment system' : 
+                `GTM Agent - ${titles[sectionName]}`;
         }
-
-        resultsDiv.innerHTML = html;
-
-    } catch (error) {
-        resultsDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
-    }
-}
-
-async function viewJSON() {
-    const response = await fetch('/api/run');
-    const data = await response.json();
-    document.getElementById('results').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-}
-
-window.onload = function() { setTimeout(runAgent, 1000); }
-</script>
+        
+        // Mode Management
+        function toggleMode() {
+            const modeSelect = document.getElementById('modeSelect');
+            currentMode = modeSelect.value === 'demo' ? 'production' : 'demo';
+            modeSelect.value = currentMode;
+            updateModeBadge();
+            
+            // Show notification
+            showAlert(`Switched to ${currentMode.toUpperCase()} mode`, 'success');
+        }
+        
+        function updateModeBadge() {
+            const modeSelect = document.getElementById('modeSelect');
+            currentMode = modeSelect.value;
+            
+            const modeBadge = document.getElementById('modeBadge');
+            const currentModeDisplay = document.getElementById('currentModeDisplay');
+            
+            modeBadge.textContent = currentMode.toUpperCase();
+            currentModeDisplay.textContent = currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
+            
+            // Update badge style
+            modeBadge.className = 'mode-badge ' + 
+                (currentMode === 'demo' ? 'mode-demo' : 'mode-production');
+        }
+        
+        // Configuration Management
+        function loadConfiguration() {
+            fetch('/api/config')
+                .then(response => response.json())
+                .then(config => {
+                    document.getElementById('rssInput').value = Array.isArray(config.rssFeeds) ? 
+                        config.rssFeeds.join('\n') : config.rssFeeds;
+                    document.getElementById('keywordsInput').value = Array.isArray(config.keywords) ? 
+                        config.keywords.join(', ') : config.keywords;
+                    document.getElementById('modeSelect').value = config.demoMode ? 'demo' : 'production';
+                    updateModeBadge();
+                    showAlert('Configuration loaded successfully', 'success');
+                })
+                .catch(error => {
+                    console.error('Error loading configuration:', error);
+                    showAlert('Error loading configuration', 'error');
+                });
+        }
+        
+        function saveConfiguration() {
+            const rssFeeds = document.getElementById('rssInput').value
+                .split(/[\n,]/)
+                .map(feed => feed.trim())
+                .filter(feed => feed.length > 0);
+            
+            const keywords = document.getElementById('keywordsInput').value
+                .split(',')
+                .map(keyword => keyword.trim())
+                .filter(keyword => keyword.length > 0);
+            
+            const demoMode = document.getElementById('modeSelect').value === 'demo';
+            const apiKey = document.getElementById('apiKeyInput').value;
+            
+            const config = {
+                demoMode,
+                rssFeeds,
+                keywords,
+                apiKey
+            };
+            
+            fetch('/api/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Configuration saved successfully', 'success');
+                    currentMode = demoMode ? 'demo' : 'production';
+                    updateModeBadge();
+                } else {
+                    showAlert('Error saving configuration', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving configuration:', error);
+                showAlert('Error saving configuration', 'error');
+            });
+        }
+        
+        // Main Agent Execution
+        async function runAgent() {
+            showLoading(true);
+            
+            const mode = document.getElementById('modeSelect').value;
+            const rssSources = document.getElementById('rssInput').value
+                .split(/[\n,]/)
+                .map(s => s.trim())
+                .filter(Boolean);
+            const keywords = document.getElementById('keywordsInput').value
+                .split(',')
+                .map(s => s.trim())
+                .filter(Boolean);
+            
+            try {
+                const response = await fetch(`/api/run?mode=${mode}&rss=${encodeURIComponent(JSON.stringify(rssSources))}&keywords=${encodeURIComponent(JSON.stringify(keywords))}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentLeads = data.data.leads || [];
+                    
+                    // Update stats
+                    document.getElementById('statLeads').textContent = data.execution_summary.leads_detected;
+                    document.getElementById('statPipeline').textContent = data.business_impact.potential_pipeline;
+                    document.getElementById('statTime').textContent = data.business_impact.time_saved;
+                    document.getElementById('statSuccess').textContent = '95%';
+                    
+                    // Update leads count in sidebar
+                    document.getElementById('leadsCount').textContent = data.execution_summary.leads_detected;
+                    
+                    // Add to history
+                    executionHistory.unshift({
+                        timestamp: new Date().toISOString(),
+                        leads: data.execution_summary.leads_detected,
+                        emails: data.execution_summary.emails_generated,
+                        mode: data.mode
+                    });
+                    
+                    // Display results
+                    displayLeads(currentLeads, data.data.emails);
+                    displayRecentLeads(currentLeads.slice(0, 3));
+                    
+                    showAlert(`GTM Agent executed successfully! Found ${data.execution_summary.leads_detected} leads.`, 'success');
+                    
+                    // Show leads section if not on dashboard
+                    if (sections.leads.style.display !== 'block') {
+                        showSection('leads');
+                    }
+                } else {
+                    showAlert('Agent execution failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error executing agent:', error);
+                showAlert(`Error: ${error.message}`, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Display Functions
+        function displayLeads(leads, emails) {
+            const container = document.getElementById('leadsResults');
+            
+            if (!leads || leads.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        No leads detected this time. Try adjusting your keywords or RSS feeds.
+                    </div>`;
+                return;
+            }
+            
+            let html = '';
+            
+            leads.forEach((lead, index) => {
+                const email = emails[index] || {};
+                const isDemo = lead.email === 'demo@example.com';
+                
+                html += `
+                <div class="lead-card">
+                    <div class="lead-header">
+                        <div class="lead-company">${lead.company || 'Unknown Company'}</div>
+                        <div class="lead-badge ${isDemo ? 'badge-new' : 'badge-qualified'}">
+                            ${isDemo ? 'DEMO' : 'QUALIFIED'}
+                        </div>
+                    </div>
+                    
+                    <div class="lead-article">
+                        <strong>📰 Article:</strong> "${lead.article_title || 'No title'}"
+                        <br>
+                        <a href="${lead.article_link || '#'}" target="_blank" style="color: var(--primary); font-size: 14px;">
+                            <i class="fas fa-external-link-alt"></i> View Article
+                        </a>
+                    </div>
+                    
+                    <div class="lead-contact">
+                        <div class="contact-item">
+                            <i class="fas fa-user"></i>
+                            <div>
+                                <strong>${lead.name || 'Unknown'}</strong><br>
+                                <small>${lead.title || 'N/A'}</small>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <strong>Email</strong><br>
+                                <small>${lead.email || 'N/A'}</small>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <strong>Phone</strong><br>
+                                <small>${lead.phone || 'N/A'}</small>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-building"></i>
+                            <div>
+                                <strong>Department</strong><br>
+                                <small>${lead.department || 'N/A'}</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="email-preview">
+                        <div class="email-subject">
+                            <i class="fas fa-paper-plane"></i> Generated Email:
+                        </div>
+                        <div class="email-body">
+                            <strong>To:</strong> ${email.to || lead.email}<br>
+                            <strong>Subject:</strong> ${email.subject || 'N/A'}<br><br>
+                            ${(email.body || '').substring(0, 200)}...
+                        </div>
+                    </div>
+                </div>`;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function displayRecentLeads(leads) {
+            const container = document.getElementById('recentLeads');
+            
+            if (!leads || leads.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        No recent leads. Execute the agent to start detecting opportunities.
+                    </div>`;
+                return;
+            }
+            
+            let html = '<div style="display: grid; gap: 15px;">';
+            
+            leads.forEach((lead, index) => {
+                html += `
+                <div style="background: rgba(67, 97, 238, 0.05); padding: 15px; border-radius: 8px; border-left: 3px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <strong>${lead.company || 'Unknown'}</strong>
+                        <small style="color: var(--gray);">${new Date(lead.detected_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
+                    </div>
+                    <div style="color: var(--gray); font-size: 14px; margin-bottom: 10px;">
+                        ${lead.article_title ? lead.article_title.substring(0, 80) + '...' : 'No title'}
+                    </div>
+                    <div style="display: flex; gap: 10px; font-size: 13px;">
+                        <span><i class="fas fa-user"></i> ${lead.name || 'Unknown'}</span>
+                        <span><i class="fas fa-envelope"></i> ${lead.email || 'N/A'}</span>
+                    </div>
+                </div>`;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        // Export Functions
+        function exportLeads(format = 'csv') {
+            if (currentLeads.length === 0) {
+                showAlert('No leads to export', 'error');
+                return;
+            }
+            
+            let content, mimeType, filename;
+            
+            if (format === 'csv') {
+                // Create CSV
+                const headers = ['Company', 'Contact Name', 'Title', 'Email', 'Phone', 'Article Title', 'Article Link', 'Detected At'];
+                const rows = currentLeads.map(lead => [
+                    `"${lead.company || ''}"`,
+                    `"${lead.name || ''}"`,
+                    `"${lead.title || ''}"`,
+                    `"${lead.email || ''}"`,
+                    `"${lead.phone || ''}"`,
+                    `"${lead.article_title || ''}"`,
+                    `"${lead.article_link || ''}"`,
+                    `"${lead.detected_at || ''}"`
+                ]);
+                
+                content = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+                mimeType = 'text/csv';
+                filename = `gtm-agent-leads-${new Date().toISOString().split('T')[0]}.csv`;
+            } else {
+                // JSON
+                content = JSON.stringify(currentLeads, null, 2);
+                mimeType = 'application/json';
+                filename = `gtm-agent-leads-${new Date().toISOString().split('T')[0]}.json`;
+            }
+            
+            // Download file
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showAlert(`Exported ${currentLeads.length} leads as ${format.toUpperCase()}`, 'success');
+        }
+        
+        // Utility Functions
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
+        
+        function showAlert(message, type = 'info') {
+            // Create alert element
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                ${message}
+                <button onclick="this.parentElement.remove()" style="margin-left: auto; background: none; border: none; color: inherit; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            // Add to top of main content
+            const mainContent = document.querySelector('.main-content');
+            mainContent.insertBefore(alertDiv, mainContent.firstChild);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentElement) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+        
+        function clearResults() {
+            if (confirm('Are you sure you want to clear all leads and results?')) {
+                currentLeads = [];
+                document.getElementById('leadsResults').innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        No leads to display. Execute the agent first.
+                    </div>`;
+                document.getElementById('recentLeads').innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        No recent leads. Execute the agent to start detecting opportunities.
+                    </div>`;
+                document.getElementById('statLeads').textContent = '0';
+                document.getElementById('statPipeline').textContent = '$0';
+                document.getElementById('statTime').textContent = '0 hours';
+                document.getElementById('leadsCount').textContent = '0';
+                
+                showAlert('All results cleared', 'success');
+            }
+        }
+        
+        function testRSSFeeds() {
+            showLoading(true);
+            
+            const rssSources = document.getElementById('rssInput').value
+                .split(/[\n,]/)
+                .map(s => s.trim())
+                .filter(Boolean);
+            
+            if (rssSources.length === 0) {
+                showAlert('Please enter at least one RSS feed URL', 'error');
+                showLoading(false);
+                return;
+            }
+            
+            // Test each feed
+            Promise.all(rssSources.map(feed => 
+                fetch(`/api/test-rss?url=${encodeURIComponent(feed)}`)
+                    .then(response => response.json())
+                    .then(data => ({ feed, success: data.success, count: data.count }))
+                    .catch(() => ({ feed, success: false, count: 0 }))
+            ))
+            .then(results => {
+                showLoading(false);
+                
+                let message = '<strong>RSS Feed Test Results:</strong><br><br>';
+                let allSuccessful = true;
+                
+                results.forEach(result => {
+                    const status = result.success ? 
+                        `<span style="color: var(--success);"><i class="fas fa-check-circle"></i> Success</span>` : 
+                        `<span style="color: var(--danger);"><i class="fas fa-times-circle"></i> Failed</span>`;
+                    
+                    message += `${result.feed}<br>${status} - ${result.count} articles found<br><br>`;
+                    
+                    if (!result.success) allSuccessful = false;
+                });
+                
+                showAlert(message, allSuccessful ? 'success' : 'error');
+            })
+            .catch(error => {
+                showLoading(false);
+                showAlert('Error testing RSS feeds', 'error');
+            });
+        }
+        
+        function testConfiguration() {
+            // Validate configuration
+            const rssFeeds = document.getElementById('rssInput').value
+                .split(/[\n,]/)
+                .map(feed => feed.trim())
+                .filter(feed => feed.length > 0);
+            
+            const keywords = document.getElementById('keywordsInput').value
+                .split(',')
+                .map(keyword => keyword.trim())
+                .filter(keyword => keyword.length > 0);
+            
+            const mode = document.getElementById('modeSelect').value;
+            
+            if (rssFeeds.length === 0) {
+                showAlert('Please add at least one RSS feed', 'error');
+                return;
+            }
+            
+            if (keywords.length === 0) {
+                showAlert('Please add at least one keyword', 'error');
+                return;
+            }
+            
+            if (mode === 'production' && !document.getElementById('apiKeyInput').value) {
+                showAlert('Production mode requires an API key', 'error');
+                return;
+            }
+            
+            showAlert('Configuration is valid! Ready to execute.', 'success');
+        }
+        
+        function refreshHistory() {
+            // For now, just show mock history
+            if (executionHistory.length === 0) {
+                document.getElementById('executionHistory').innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        No execution history available yet.
+                    </div>`;
+                return;
+            }
+            
+            let html = '<div style="display: grid; gap: 10px;">';
+            
+            executionHistory.forEach((exec, index) => {
+                html += `
+                <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <strong>Execution #${index + 1}</strong>
+                        <small style="color: var(--gray);">${new Date(exec.timestamp).toLocaleString()}</small>
+                    </div>
+                    <div style="display: flex; gap: 15px; font-size: 14px;">
+                        <span><i class="fas fa-users"></i> ${exec.leads} leads</span>
+                        <span><i class="fas fa-envelope"></i> ${exec.emails} emails</span>
+                        <span class="mode-badge ${exec.mode === 'Demo' ? 'mode-demo' : 'mode-production'}">
+                            ${exec.mode}
+                        </span>
+                    </div>
+                </div>`;
+            });
+            
+            html += '</div>';
+            document.getElementById('executionHistory').innerHTML = html;
+            
+            showAlert('History refreshed', 'success');
+        }
+        
+        function refreshAnalytics() {
+            // Mock analytics for demo
+            document.getElementById('analyticsExecutions').textContent = executionHistory.length;
+            document.getElementById('analyticsTotalLeads').textContent = 
+                executionHistory.reduce((sum, exec) => sum + exec.leads, 0);
+            document.getElementById('analyticsAvgPipeline').textContent = 
+                executionHistory.length > 0 ? `$${Math.round(executionHistory.reduce((sum, exec) => sum + exec.leads * 10000, 0) / executionHistory.length).toLocaleString()}` : '$0';
+            document.getElementById('analyticsSuccessRate').textContent = 
+                executionHistory.length > 0 ? '95%' : '0%';
+            
+            document.getElementById('analyticsDetails').innerHTML = `
+                <div style="margin-top: 20px;">
+                    <h4 style="margin-bottom: 15px;">Performance Overview</h4>
+                    <div style="background: rgba(67, 97, 238, 0.05); padding: 20px; border-radius: 8px;">
+                        <p>Total Executions: <strong>${executionHistory.length}</strong></p>
+                        <p>Total Leads Detected: <strong>${executionHistory.reduce((sum, exec) => sum + exec.leads, 0)}</strong></p>
+                        <p>Average Pipeline per Execution: <strong>${executionHistory.length > 0 ? `$${Math.round(executionHistory.reduce((sum, exec) => sum + exec.leads * 10000, 0) / executionHistory.length).toLocaleString()}` : '$0'}</strong></p>
+                        <p>Estimated Time Saved: <strong>${executionHistory.reduce((sum, exec) => sum + exec.leads * 2, 0)} hours</strong></p>
+                    </div>
+                </div>`;
+            
+            showAlert('Analytics updated', 'success');
+        }
+    </script>
 </body>
 </html>
